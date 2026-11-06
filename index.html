@@ -43,137 +43,106 @@
             margin: auto;
         }
 
-        /* Portals to other projects, arranged around the gif */
-        .stage {
-            position: relative;
-            margin-top: 200px;
+        /* Bento grid of other projects, wrapped around the gif */
+        .bento {
+            display: grid;
+            grid-template-columns: 240px 500px 240px;
+            grid-template-rows: 180px auto;
+            grid-template-areas:
+                "horizon horizon quantum"
+                "blog    center  quantum";
+            gap: 12px;
         }
 
-        .portal {
-            --size: 140px;
-            position: absolute;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
+        .center {
+            grid-area: center;
+        }
+
+        .tile {
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #e5e5e5;
+            border-radius: 16px;
             text-decoration: none;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
-        .portal-left {
-            right: calc(100% + 48px);
-            top: 50%;
-            transform: translateY(-50%);
-        }
-
-        .portal-top {
-            bottom: calc(100% + 28px);
-            left: 50%;
-            transform: translateX(-50%);
-        }
-
-        .portal-right {
-            left: calc(100% + 48px);
-            top: 50%;
-            transform: translateY(-50%);
-        }
-
-        .portal-window {
-            position: relative;
-            display: block;
-            width: var(--size);
-            height: var(--size);
-            border-radius: 50%;
-            isolation: isolate;
-            transition: transform 0.35s ease;
-        }
-
-        /* Swirling ring */
-        .portal-window::before {
-            content: "";
-            position: absolute;
-            inset: -7px;
-            z-index: -1;
-            border-radius: 50%;
-            background: conic-gradient(var(--c1), var(--c2), var(--c1), var(--c2), var(--c1));
-            box-shadow: 0 0 22px 2px var(--c1);
-            animation: portal-spin 4s linear infinite;
-        }
-
-        /* Depth vignette */
-        .portal-window::after {
-            content: "";
-            position: absolute;
-            inset: 0;
-            border-radius: 50%;
-            box-shadow: inset 0 0 26px 8px rgba(0, 0, 0, 0.6);
-            pointer-events: none;
-        }
-
-        .portal-window img {
+        .tile img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            border-radius: 50%;
+            transition: transform 0.4s ease;
         }
 
-        .portal:hover .portal-window,
-        .portal:focus-visible .portal-window {
-            transform: scale(1.08);
+        .tile:hover,
+        .tile:focus-visible {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
         }
 
-        .portal:hover .portal-window::before,
-        .portal:focus-visible .portal-window::before {
-            animation-duration: 1.2s;
+        .tile:hover img,
+        .tile:focus-visible img {
+            transform: scale(1.04);
         }
 
-        .portal-quantum {
-            --c1: #8b5cf6;
-            --c2: #22d3ee;
+        .tile-label {
+            position: absolute;
+            left: 10px;
+            bottom: 10px;
+            padding: 2px 10px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.92);
+            color: #1f1f1f;
+            font-size: medium;
+            border: 1px solid #e5e5e5;
         }
 
-        .portal-horizon {
-            --c1: #f59e0b;
-            --c2: #1e3a8a;
+        .tile-horizon {
+            grid-area: horizon;
         }
 
-        .portal-blog {
-            --c1: #22c55e;
-            --c2: #0a0a0a;
+        .tile-horizon img {
+            object-position: center 22%;
         }
 
-        @keyframes portal-spin {
-            to {
-                transform: rotate(1turn);
+        .tile-quantum {
+            grid-area: quantum;
+        }
+
+        .tile-quantum img {
+            object-position: 4% center;
+        }
+
+        .tile-blog {
+            grid-area: blog;
+        }
+
+        .tile-blog img {
+            object-position: 14% center;
+        }
+
+        /* Not enough room to wrap the gif: gif on top, tiles in a row below */
+        @media (max-width: 1040px),
+        (max-height: 640px) {
+            .bento {
+                width: min(500px, 100%);
+                grid-template-columns: repeat(3, 1fr);
+                grid-template-rows: auto 110px;
+                grid-template-areas:
+                    "center  center  center"
+                    "horizon quantum blog";
             }
-        }
 
-        @media (prefers-reduced-motion: reduce) {
-            .portal-window::before {
-                animation: none;
-            }
-        }
-
-        /* Not enough room to surround the gif: line portals up below it */
-        @media (max-width: 900px),
-        (max-height: 620px) {
-            .stage {
-                margin-top: 0;
-                display: grid;
-                grid-template-columns: repeat(3, auto);
-                justify-content: center;
-                gap: 20px 28px;
-            }
-
-            .stage>img {
-                grid-column: 1 / -1;
+            .center img {
                 max-width: 100%;
                 height: auto;
             }
 
-            .portal {
-                --size: 84px;
-                position: static;
-                transform: none;
+            .tile-label {
+                left: 6px;
+                bottom: 6px;
+                padding: 0 8px;
+                font-size: small;
             }
         }
     </style>
@@ -185,22 +154,24 @@
     -->
     <div class="box">
         <div class="noot">
-            <div class="stage">
-                <img src="pengu.gif" alt="My GIF">
-                <a class="portal portal-left portal-quantum" href="https://quantum.isatippens.com" title="QuantumLab">
-                    <span class="portal-window"><img src="portals/quantum.jpg" alt="" width="320" height="320"></span>
-                    <span class="portal-label">quantum</span>
+            <div class="bento">
+                <div class="center">
+                    <img src="pengu.gif" alt="My GIF">
+                    <p>Made by <a href="https://isatippens.com">me</a></p>
+                </div>
+                <a class="tile tile-horizon" href="https://horizon.noot.zip" title="Fifty Years Beyond Earth">
+                    <img src="sites/horizon.jpg" alt="" width="1280" height="800">
+                    <span class="tile-label">horizon</span>
                 </a>
-                <a class="portal portal-top portal-horizon" href="https://horizon.noot.zip" title="Fifty Years Beyond Earth">
-                    <span class="portal-window"><img src="portals/horizon.jpg" alt="" width="320" height="320"></span>
-                    <span class="portal-label">horizon</span>
+                <a class="tile tile-quantum" href="https://quantum.isatippens.com" title="QuantumLab">
+                    <img src="sites/quantum.jpg" alt="" width="1280" height="800">
+                    <span class="tile-label">quantum</span>
                 </a>
-                <a class="portal portal-right portal-blog" href="https://blog.noot.zip" title="TECH_LOG // SYSTEM_OUT">
-                    <span class="portal-window"><img src="portals/blog.jpg" alt="" width="320" height="320"></span>
-                    <span class="portal-label">blog</span>
+                <a class="tile tile-blog" href="https://blog.noot.zip" title="TECH_LOG // SYSTEM_OUT">
+                    <img src="sites/blog.jpg" alt="" width="1280" height="800">
+                    <span class="tile-label">blog</span>
                 </a>
             </div>
-            <p>Made by <a href="https://isatippens.com">me</a></p>
         </div>
     </div>
 </body>
